@@ -80,7 +80,12 @@ code {
   align-items: center;
   justify-content: space-between;
 }
-
+.msg{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: red;
+}
 .add-form {
   margin-bottom: 40px;
 }
