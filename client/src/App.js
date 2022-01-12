@@ -6,49 +6,70 @@ import Header from './components/Header'
 import Footer from './components/Footer'
 import Tasks from './components/Tasks'
 import AddTask from './components/AddTask'
-import About from './components/About'
-import Login from './components/Login';
+import About from './pages/About'
+import Login from './pages/Login';
 import * as actions from './actions'
+import Register from './pages/Register';
 
 
 function App() {
   const isLogged = useSelector(state => state.isLogged)
-  const stateTask=useSelector(state=>state.tasks)
+  const tasks=useSelector(state=>state.tasks)
   const dispatch =useDispatch();
   const [showAddTask, setShowAddTask]=useState(false)
   const [mytasks,setTasks] =useState([])
   const [showLogin, setShowLogin]=useState(false)
 
+  console.log(tasks)
   useEffect(()=>{
     const getTask=async()=>{
-      const res= featchTasks();
-      setTasks((await res).payload)
+      const res=await fetchTasks();
+      console.log(res)
+      setTasks(...tasks.data)
+      console.log(tasks,tasks.length,mytasks,mytasks.length);
     }
     getTask();
-  },[dispatch])
-
-  const featchTasks=async()=>{
-    return dispatch(actions.getTask());
+  },[])
+  console.log(tasks.length)
+  const fetchTasks=async()=>{
+    const res=await fetch("/tasks/list");
+    const data=await res.json(); 
+    return dispatch(actions.getTask(data));
   }
 
   //Add task
-  const addTask =(task)=>{
-    dispatch(actions.addTask(task));
-    console.log(mytasks)
-    setTasks(await stateTask)
+  const addTask =async(task)=>{
+    const res=await fetch("/tasks/addtask",{
+      method: "POST",
+      headers:{
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(task)
+    })
+    const newTask= await res.json();
+    dispatch(actions.addTask())
+    console.log(tasks)
+    //snewTasketTasks(await stateTask)
   }
   //Delete A Task
-  const DeleteTask =async(id)=>{ 
+  const DeleteTask =async(id)=>{
+    await fetch(`/tasks/${id}`,{
+      method: 'DELETE'
+    });  
     dispatch(actions.delTask(id))
-    setTasks(await stateTask)
+    setTasks(tasks)
+    console.log(tasks)
   }
 
-  const featchTask=(data)=>{
-    return dispatch(actions.featchTask(data)).payload;
+  const fetchTask=async(id)=>{
+    const res=await fetch(`/tasks/fetchtask/${id}`)
+    const rec=await res.json()
+    console.log(rec)
+    return dispatch(actions.fetchTask(rec.data)).payload;
   }
   //Toggle
   const toggleReminder =async(id)=>{
-    const taskToToggle=await featchTask(id)
+    const taskToToggle=await fetchTask(id)
     const updateTask ={...taskToToggle,reminder:!taskToToggle.reminder}
     const res=await fetch(`/tasks/${id}`,{
       method: 'PUT',
@@ -57,7 +78,7 @@ function App() {
     })
     const data = await res.json();
     dispatch(actions.toggleReminder(data,id))
-    setTasks(await stateTask)
+   // setTasks(await stateTask)
   }
   
   const chkisLogged=async(user)=>{
@@ -86,31 +107,33 @@ function App() {
   return (
     <Router>
     <div className='container'>
+      <Routes>
       <Header
         onAdd={() => setShowAddTask(!showAddTask)}
         showAdd={showAddTask}
+        showLogin={showLogin}
         isLogged={isLogged}
         onLogin={()=>setShowLogin(!showLogin)}
       />
-      <Routes>
         <Route
           path='/'
           element={
             <>
-              {!isLogged && showLogin && <Login onLogin={login} />} 
+              {!isLogged && !showLogin && <Login onLogin={login} />} 
               {isLogged && showAddTask && <AddTask onAdd={addTask} />}
-              {stateTask.length > 0 ? (
-                <Tasks
-                  tasks={mytasks}
-                  onDelete={DeleteTask}
-                  onToggle={toggleReminder}
-                />
-              ) : (
-                'No Tasks To Show'
-              )}
+              {mytasks.length>0?(<Tasks
+                tasks={mytasks}
+                onDelete={DeleteTask}
+                onToggle={toggleReminder}
+              />):(
+                "No task To Show"
+              )
+            } 
             </>
           }
         />
+        <Route path='/register' element={<Register/>} />
+        <Route path='/login' element={<Login/>} />
         <Route path='/about' element={<About />} />
       </Routes>
       <Footer />

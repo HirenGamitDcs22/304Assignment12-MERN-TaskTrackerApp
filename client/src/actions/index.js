@@ -29,10 +29,10 @@ export const getTask=(task)=>{
         payload: task
     }
 }
-export const featchTask=(task)=>{
+export const fetchTask=(id)=>{
     return{
-        type:"FEATCH_TASK",
-        payload:task
+        type:"FETCH_TASK",
+        payload:id
     }
 }
 export const delTask=(id)=>{

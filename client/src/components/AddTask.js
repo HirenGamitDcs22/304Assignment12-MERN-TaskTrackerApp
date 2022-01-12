@@ -7,7 +7,8 @@ function AddTask({onAdd}) {
 
     const onSubmit=(e)=>{
         e.preventDefault()
-        onAdd({text,day,reminder})
+        const id=Math.floor(Math.random() * 1000)
+        onAdd({id,text,day,reminder})
         setText('')
         setDay('')
         setReminder(false)

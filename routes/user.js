@@ -6,7 +6,7 @@ const userModel=require('../models/user')
 
 // Get list of all users
 router.get("/list", async (req, res) => {
-  const userList = await userModel.find({}, { username: true });
+  const userList = await userModel.find({});
 
   if (userList.length === 0) {
     return res.json({ data: "no users in fullstack" });
@@ -16,10 +16,10 @@ router.get("/list", async (req, res) => {
 });
 
 // Register user
-router.post("/registration", (req, res) => {
+router.post("/registration", async(req, res) => {
   const newUser  = req.body;
-  userModel.create(newUser);
-  return res.json({ data: "registered successfully" });
+  await userModel.create(newUser);
+  return res.json({ msg: "registered successfully",data:newUser });
 });
 
 module.exports=router
