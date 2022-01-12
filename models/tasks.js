@@ -1,7 +1,6 @@
 const mongoose = require("mongoose")
 
 const tasksSchema=mongoose.Schema({
-    id:Number,
     text:String,
     day:String,
     reminder:Boolean
