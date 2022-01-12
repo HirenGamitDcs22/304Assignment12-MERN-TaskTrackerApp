@@ -1,6 +1,6 @@
 import {useState} from 'react'
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link,useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
 
 const Register = () => {
@@ -8,7 +8,7 @@ const Register = () => {
     const [password,setPwd]=useState('')
     const [name,setName]=useState('')
     const [age,setAge]=useState('')
-
+    const Navigate=useNavigate()
     const onSubmit=(e)=>{
         e.preventDefault()
         onReg({username,password,name,age})
@@ -28,8 +28,7 @@ const Register = () => {
           })
           const newTask= await res.json();
           console.log(newTask)
-          console.log(JSON.stringify(user))
-
+        Navigate("/login")
     }
     return (
         <div>
@@ -55,7 +54,7 @@ const Register = () => {
                     <input type='text' placeholder='Age' value={age}
                         onChange={(e)=>setAge(e.target.value)} />
                 </div>
-                <input type='submit' value='Login' className='btn btn-block' ></input>
+                <input type='submit' value='Register' className='btn btn-block' ></input>
             </form>
             <div>Already have a Account?<Link to='/login'> Login</Link></div>
         </div>
