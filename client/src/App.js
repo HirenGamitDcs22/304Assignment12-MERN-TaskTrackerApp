@@ -20,20 +20,23 @@ function App() {
   const [mytasks,setTasks] =useState([])
   const [showLogin, setShowLogin]=useState(false)
 
-  console.log(tasks)
   useEffect(()=>{
     const getTask=async()=>{
       const res=await fetchTasks();
-      console.log(res)
-      setTasks(...tasks.data)
-      console.log(tasks,tasks.length,mytasks,mytasks.length);
+      if(res != 1){
+        setTasks(await res.payload.data)
+      }  
     }
     getTask();
-  },[])
-  console.log(tasks.length)
+  },[dispatch])
+
   const fetchTasks=async()=>{
     const res=await fetch("/tasks/list");
-    const data=await res.json(); 
+    const data=await res.json();
+    console.log(data) 
+    if(data.code=='NO_TASKS'){
+      return 1
+    }
     return dispatch(actions.getTask(data));
   }
 
@@ -47,79 +50,53 @@ function App() {
       body: JSON.stringify(task)
     })
     const newTask= await res.json();
-    dispatch(actions.addTask())
-    console.log(tasks)
-    //snewTasketTasks(await stateTask)
+    dispatch(actions.addTask(newTask))
+    setTasks(await tasks.data)
   }
   //Delete A Task
   const DeleteTask =async(id)=>{
-    await fetch(`/tasks/${id}`,{
+    await fetch(`/tasks/deltask/${id}`,{
       method: 'DELETE'
     });  
     dispatch(actions.delTask(id))
-    setTasks(tasks)
-    console.log(tasks)
+    setTasks(await tasks.data)
   }
 
   const fetchTask=async(id)=>{
     const res=await fetch(`/tasks/fetchtask/${id}`)
     const rec=await res.json()
-    console.log(rec)
-    return dispatch(actions.fetchTask(rec.data)).payload;
+    return dispatch(actions.fetchTask(rec.data))
   }
   //Toggle
   const toggleReminder =async(id)=>{
     const taskToToggle=await fetchTask(id)
     const updateTask ={...taskToToggle,reminder:!taskToToggle.reminder}
-    const res=await fetch(`/tasks/${id}`,{
+    const res=await fetch(`/tasks/updatereminder/${id}`,{
       method: 'PUT',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(updateTask)
     })
     const data = await res.json();
     dispatch(actions.toggleReminder(data,id))
-   // setTasks(await stateTask)
-  }
-  
-  const chkisLogged=async(user)=>{
-    const res = await  fetch("/users")
-    const usersdata=await res.json(); 
-    const rec=usersdata.filter((u)=>u.uname === user.uname && u.pwd === user.pwd)
-    const id=rec.map((u)=>u.id)
-    const res1=await fetch(`/users/${id[0]}`);
-    const data=await res1.json();
-    const r=dispatch(actions.featchuser(data))
-    const users=r.user;
-    const updateUser={...users,logedin:!users.logedin}
-    const res2=await fetch(`/users/${users.id}`,{
-      method:'PUT',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(updateUser)
-    })
-    const data1 = await res2.json();
-    const rec1=dispatch(actions.updateUser(data1,users.id))
-  }
-  //Login
-  const login=(logindata)=>{
-    chkisLogged(logindata)
-    dispatch(actions.chkisLogged())
+    setTasks(await tasks.data)
   }
   return (
     <Router>
     <div className='container'>
-      <Routes>
-      <Header
+    <Header
         onAdd={() => setShowAddTask(!showAddTask)}
         showAdd={showAddTask}
         showLogin={showLogin}
         isLogged={isLogged}
         onLogin={()=>setShowLogin(!showLogin)}
       />
+      <Routes>
+      
         <Route
           path='/'
           element={
             <>
-              {!isLogged && !showLogin && <Login onLogin={login} />} 
+              {!isLogged && showLogin && <Login/>} 
               {isLogged && showAddTask && <AddTask onAdd={addTask} />}
               {mytasks.length>0?(<Tasks
                 tasks={mytasks}
