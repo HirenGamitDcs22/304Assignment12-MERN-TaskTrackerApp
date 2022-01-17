@@ -80,6 +80,11 @@ code {
   align-items: center;
   justify-content: space-between;
 }
+.task h3 h4 {
+  display: flex;
+  align-items:right;
+  justify-content: space-between;
+}
 .msg{
   display: flex;
   align-items: center;
