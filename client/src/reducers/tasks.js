@@ -1,15 +1,15 @@
 const taskReducer=(tasks=[],{type,payload})=>{
     switch (type) {
         case "ADD_TASK":
-            return {...tasks,payload}
+            return [{...tasks,payload}]
         case "GET_TASKS":
             return payload
         case "DELETE_TASKS":
-                return tasks
+                return tasks.data.filter(t=>t._id != payload)
         case "TOGGLE_REMIND":
-            return tasks.map((task)=>task.id === payload.id ?{...task,reminder:payload.data.reminder} : task)
+            return tasks
         case "FETCH_TASK":
-            return 
+            return tasks
 
         default:
             return tasks
