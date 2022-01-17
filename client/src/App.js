@@ -80,6 +80,9 @@ function App() {
     dispatch(actions.toggleReminder(data,id))
     setTasks(await tasks.data)
   }
+  const onUpdate=()=>{
+
+  }
   return (
     <Router>
     <div className='container'>
@@ -102,6 +105,7 @@ function App() {
                 tasks={mytasks}
                 onDelete={DeleteTask}
                 onToggle={toggleReminder}
+                onUpdate={onUpdate}
               />):(
                 "No task To Show"
               )
