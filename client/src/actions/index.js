@@ -20,7 +20,7 @@ export const updateUser=(user,id)=>{
 export const addTask=(task)=>{
     return{
         type:"ADD_TASK",
-        payload:task
+        task
     }
 }
 export const getTask=(task)=>{
@@ -32,7 +32,7 @@ export const getTask=(task)=>{
 export const fetchTask=(id)=>{
     return{
         type:"FETCH_TASK",
-        payload:id
+        id
     }
 }
 export const delTask=(id)=>{
