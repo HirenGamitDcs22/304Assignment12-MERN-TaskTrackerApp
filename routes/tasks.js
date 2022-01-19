@@ -27,8 +27,8 @@ router.get("/fetchtask/:id",async(req,res)=>{
 //POST: /tasks/addtask
 router.post("/addtask",async(req,res)=>{
     const newTask = req.body;
-    tasksModel.create(newTask);
-    return res.json({ data: newTask });
+    const newtask=await tasksModel.create(newTask);
+    return res.json({ data: newtask });
 })
 
 //Update Task
