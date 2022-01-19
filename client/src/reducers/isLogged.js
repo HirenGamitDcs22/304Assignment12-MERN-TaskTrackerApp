@@ -1,4 +1,4 @@
-const loggedReducer=(state=false,action)=>{
+const loggedReducer=(state=true,action)=>{
     switch (action.type) {
         case "SING_IN":
             return  !state
