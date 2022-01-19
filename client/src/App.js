@@ -10,6 +10,7 @@ import About from './pages/About'
 import Login from './pages/Login';
 import * as actions from './actions'
 import Register from './pages/Register';
+import UpdateTask from './components/UpdateTask';
 
 
 function App() {
@@ -18,26 +19,26 @@ function App() {
   const dispatch =useDispatch();
   const [showAddTask, setShowAddTask]=useState(false)
   const [mytasks,setTasks] =useState([])
+  const [updateTask, setUpdateTask]=useState([])
   const [showLogin, setShowLogin]=useState(false)
-
+  const [showUpdate,setShowUpdate]=useState(false)
   useEffect(()=>{
     const getTask=async()=>{
       const res=await fetchTasks();
-      if(res != 1){
-        setTasks(await res.payload.data)
+      if(res !== 1){
+        setTasks(await res.payload)
       }  
     }
-    getTask();
+    getTask()
   },[dispatch])
 
   const fetchTasks=async()=>{
     const res=await fetch("/tasks/list");
-    const data=await res.json();
-    console.log(data) 
-    if(data.code=='NO_TASKS'){
+    const result=await res.json();
+    if(result.code === 'NO_TASKS'){
       return 1
     }
-    return dispatch(actions.getTask(data));
+    return dispatch(actions.getTask(result.data));
   }
 
   //Add task
@@ -50,8 +51,8 @@ function App() {
       body: JSON.stringify(task)
     })
     const newTask= await res.json();
-    dispatch(actions.addTask(newTask))
-    setTasks(await tasks.data)
+    dispatch(actions.addTask(newTask.data))
+    setTasks(await tasks)
   }
   //Delete A Task
   const DeleteTask =async(id)=>{
@@ -59,13 +60,13 @@ function App() {
       method: 'DELETE'
     });  
     dispatch(actions.delTask(id))
-    setTasks(await tasks.data)
+    setTasks(await tasks)
   }
 
   const fetchTask=async(id)=>{
     const res=await fetch(`/tasks/fetchtask/${id}`)
     const rec=await res.json()
-    return dispatch(actions.fetchTask(rec.data))
+    return rec.data
   }
   //Toggle
   const toggleReminder =async(id)=>{
@@ -78,10 +79,17 @@ function App() {
     })
     const data = await res.json();
     dispatch(actions.toggleReminder(data,id))
-    setTasks(await tasks.data)
+    setTasks(await tasks)
   }
-  const onUpdate=()=>{
+  const UpdateTask =async(id,data) => {
 
+  }
+  const onEdit=async(id)=>{
+    console.log("update id :"+id)
+    const task=await fetchTask(id)
+    console.log(task);
+    setUpdateTask(task)
+    setShowUpdate(!showUpdate)
   }
   return (
     <Router>
@@ -100,12 +108,13 @@ function App() {
           element={
             <>
               {!isLogged && showLogin && <Login/>} 
-              {isLogged && showAddTask && <AddTask onAdd={addTask} />}
+              {isLogged && showAddTask &&  <AddTask onAdd={addTask} title="Save Task" />}
+              {isLogged && showUpdate && <UpdateTask onUpdate={UpdateTask} updatetask={updateTask} title="Update" />}
               {mytasks.length>0?(<Tasks
                 tasks={mytasks}
                 onDelete={DeleteTask}
                 onToggle={toggleReminder}
-                onUpdate={onUpdate}
+                onEdit={onEdit}
               />):(
                 "No task To Show"
               )
