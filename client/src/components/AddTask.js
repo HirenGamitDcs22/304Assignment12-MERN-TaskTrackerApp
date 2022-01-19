@@ -1,10 +1,9 @@
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 
-function AddTask({onAdd}) {
+function AddTask({onAdd,title}) {
     const [text,setText]=useState('')
     const [day,setDay]=useState('')
     const [reminder,setReminder]=useState(false)
-
     const onSubmit=(e)=>{
         e.preventDefault()
         onAdd({text,day,reminder})
@@ -27,7 +26,7 @@ function AddTask({onAdd}) {
                 <label>Set Reminder</label>
                 <input type='checkbox' checked={reminder} value={reminder} onChange={(e) =>setReminder(e.currentTarget.checked)}></input>
             </div>
-            <input type='submit' value='Save Task' className='btn btn-block' ></input>
+            <input type='submit' value={title} className='btn btn-block' ></input>
         </form>
     )
 }
